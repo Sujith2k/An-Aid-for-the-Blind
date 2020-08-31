@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'dart:math';
@@ -19,18 +18,13 @@ loadmodel() async{
   }
 }
 
-predict(dynamic image_data) async{
-  if (image_data == null)
-    return 'No Image Recived';
-
-  await yoloTiny(image_data);
-}
 
 yoloTiny(dynamic image_data) async{
 
+  var objects = new List();
   print('[DEBUG] BEFORE YOLO');
   img.Image image;
-  image_data.then( (data) async{
+  return image_data.then( (data) async{
     image = img.decodeImage(data);
     img.Image resizedImage = img.copyResize(image, height: 416, width: 416);
     print('[DEBUG] After copyResize');
@@ -41,8 +35,11 @@ yoloTiny(dynamic image_data) async{
       threshold: 0.3,
     );
     print('[DEBUG] AFTER YOLO');
-    print(recognition);
+    print('[DEBUG] Detections: $recognition');
+
+    return recognition;
   });
+
 }
 
 Uint8List imageToByteListFloat32(

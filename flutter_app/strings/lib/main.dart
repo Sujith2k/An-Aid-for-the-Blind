@@ -1,9 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:image/image.dart' as Img;
 import 'package:http/http.dart' as http;
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:synchronized/synchronized.dart';
+
 import 'yolo.dart';
+import 'Text2Speech.dart';
+import 'Speech2text.dart';
+
 
 void main() {
   runApp(MaterialApp(
@@ -28,13 +33,15 @@ class _HomeState extends State<Home> {
   final URLController = TextEditingController();
   String img_url = 'https://static.dezeen.com/uploads/2020/06/priestmangoode-neptune-spaceship-design_dezeen_2364_hero-2-1024x576.jpg';
   Image img ;
-  bool ready_flag;
+  var objects = new List();
+  String words1;
 
   @override
   void initState() {
     super.initState();
     img = Image(image: NetworkImage(img_url) );
     loadmodel();
+    initialize_stt();
   }
 
   @override
@@ -49,19 +56,38 @@ class _HomeState extends State<Home> {
 
     // REFRESH Button
     floatingActionButton: FloatingActionButton(
-      onPressed: () {
-          img_url = URLController.text;
-          print('[DEBUG] Entered URL : $img_url');
-          dynamic img_data = urlToImgData(img_url);
-          print(img_data);
-          predict(img_data);
-          img_data
-              .then( (data) {
-            img = Image.memory(data);
-            setState(() {});
-          });
+      onPressed: () async{
+
+        img_url = URLController.text;
+        print('[DEBUG] Entered URL : $img_url');
+        dynamic img_data = urlToImgData(img_url);
+        img_data.then((data) {
+          img = Image.memory(data);
+        });
+
+        isListening = true;
+        StartListening();
+        await Future.delayed(Duration(seconds: 4));
+        // YOLO
+        if( words.contains('detect')){
+
+          print('[DEBUG] Entered YOLO');
+
+            dynamic results = await yoloTiny(img_data);
+            objects = new List();
+
+              for( int i =0 ; i < results.length ; i++) {
+                objects.add(results[i]['detectedClass']);
+              }
+              print('[DEBUG] Objects: $objects');
+              ReadOut('Detected:' + objects.toString());
+        }
+        Future.delayed(Duration(seconds: 2), () => setState(() {}));
+        speech.stop();
       },
-      child: Icon(Icons.refresh),
+
+
+      child: Icon(Icons.mic),
       backgroundColor: Colors.red,
     ),
 

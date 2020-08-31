@@ -26,7 +26,10 @@ dependencies:
   tflite: 1.0.4
   image: 2.1.4
   http: ^0.12.2
-  path_provider: ^1.6.7
+  flutter_tts: ^0.6.0
+  speech_recognition: ^0.3.0+1
+  speech_to_text: ^2.3.0
+  synchronized: ^2.2.0+2
 
 
 
@@ -55,6 +58,7 @@ flutter:
    - assets/tflite/yolov3-tiny.tflite
    - assets/tflite/yolov2_tiny.txt
    - assets/tflite/yolov2_tiny.tflite
+   - assets/tflite/yolo_v3.tflite
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
