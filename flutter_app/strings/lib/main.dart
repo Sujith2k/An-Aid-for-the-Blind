@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
   String img_url = 'https://static.dezeen.com/uploads/2020/06/priestmangoode-neptune-spaceship-design_dezeen_2364_hero-2-1024x576.jpg';
   Image img ;
   var objects = new List();
-  String words1;
+  String Results_text = ' ';
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _HomeState extends State<Home> {
     // REFRESH Button
     floatingActionButton: FloatingActionButton(
       onPressed: () async{
-
+        Results_text = ' ';
         img_url = URLController.text;
         print('[DEBUG] Entered URL : $img_url');
         dynamic img_data = urlToImgData(img_url);
@@ -80,7 +80,8 @@ class _HomeState extends State<Home> {
                 objects.add(results[i]['detectedClass']);
               }
               print('[DEBUG] Objects: $objects');
-              ReadOut('Detected:' + objects.toString());
+              Results_text = objects.toString();
+              ReadOut('Detected:' + Results_text);
         }
         setState(() {});
         speech.stop();
@@ -124,7 +125,20 @@ class _HomeState extends State<Home> {
               fontSize: 25,
               fontWeight: FontWeight.bold,
             ),
-          )
+          ),
+
+          SizedBox(height: 10),
+
+          Text(
+            Results_text,
+            style: TextStyle(
+              color: Colors.white,
+              letterSpacing: 2,
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
         ],
       ),
     ),
