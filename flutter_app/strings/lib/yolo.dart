@@ -18,7 +18,7 @@ loadmodel() async{
 
 yoloTiny(dynamic image_data) async{
 
-  var objects = new List();
+
   print('[DEBUG] BEFORE YOLO');
   img.Image image;
   return image_data.then( (data) async{

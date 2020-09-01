@@ -68,7 +68,6 @@ class _HomeState extends State<Home> {
         dynamic words = await StartListening();
         print('[DEBUG] Recived from Start : $words');
 
-        await Future.delayed(Duration(seconds: 4));
         // YOLO
         if( words.contains('detect')){
 
