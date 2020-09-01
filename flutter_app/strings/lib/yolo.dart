@@ -1,9 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:tflite/tflite.dart';
 import 'package:image/image.dart' as img;
-import 'package:http/http.dart' as http;
-import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 
 loadmodel() async{

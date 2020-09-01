@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:synchronized/synchronized.dart';
+
 
 import 'yolo.dart';
 import 'Text2Speech.dart';
@@ -66,7 +65,9 @@ class _HomeState extends State<Home> {
         });
 
         isListening = true;
-        StartListening();
+        dynamic words = await StartListening();
+        print('[DEBUG] Recived from Start : $words');
+
         await Future.delayed(Duration(seconds: 4));
         // YOLO
         if( words.contains('detect')){

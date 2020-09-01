@@ -1,12 +1,12 @@
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'dart:math';
-import 'main.dart';
+
 
 
 stt.SpeechToText speech = stt.SpeechToText();
 bool isListening = false;
-dynamic words;
+dynamic final_words;
 double minSoundLevel = -50000,maxSoundLevel = 50000;
 
 initialize_stt() async{
@@ -18,8 +18,9 @@ initialize_stt() async{
 }
 
 
-StartListening() {
+StartListening() async{
 
+  isListening = true;
   speech.listen(
     onResult: resultListener,
     listenFor: Duration(seconds: 10),
@@ -30,17 +31,18 @@ StartListening() {
     onDevice: true,
     listenMode: stt.ListenMode.confirmation
   );
-  //speech.stop();
-  /*Future.delayed(Duration(microseconds: 200), () => isListening = false);
-  print('[DEBUG] Returning: $words');*/
-  //return words;
+
+  while(isListening){
+    await Future.delayed(Duration(milliseconds: 100));
+  }
+  return final_words;
 }
 
 resultListener(SpeechRecognitionResult result){
   if(result.finalResult)
-    words = result.recognizedWords;
-    print('[DEBUG] Words in Speech: $words');
-    return words;
+    final_words = result.recognizedWords;
+    print('[DEBUG] Words in Speech: $final_words');
+    isListening = false;
 }
 
 soundLevelListener(double level){
