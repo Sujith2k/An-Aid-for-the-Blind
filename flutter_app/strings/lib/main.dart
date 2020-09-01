@@ -82,7 +82,7 @@ class _HomeState extends State<Home> {
               print('[DEBUG] Objects: $objects');
               ReadOut('Detected:' + objects.toString());
         }
-        Future.delayed(Duration(seconds: 2), () => setState(() {}));
+        setState(() {});
         speech.stop();
       },
 
