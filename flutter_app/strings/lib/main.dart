@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'yolo.dart';
 import 'Text2Speech.dart';
 import 'Speech2text.dart';
+import 'WitAi.dart';
+import 'location.dart';
 
 
 void main() {
@@ -58,31 +60,45 @@ class _HomeState extends State<Home> {
       onPressed: () async{
         Results_text = ' ';
         img_url = URLController.text;
-        print('[DEBUG] Entered URL : $img_url');
-        dynamic img_data = urlToImgData(img_url);
-        img_data.then((data) {
-          img = Image.memory(data);
-        });
+
 
         isListening = true;
         dynamic words = await StartListening();
-        print('[DEBUG] Recived from Start : $words');
+        print('[DEBUG] Recived from StartListening : $words');
+
+        String intent = await getIntents(words);
+        print('[DEBUG] Intent Recived : $intent');
 
         // YOLO
-        if( words.contains('detect')){
+        if( intent == 'detect_objects'){
 
           print('[DEBUG] Entered YOLO');
 
-            dynamic results = await yoloTiny(img_data);
-            objects = new List();
+          print('[DEBUG] Entered URL : $img_url');
+          dynamic img_data = await urlToImgData(img_url);
+          img_data.then((data) {
+            img = Image.memory(data);
+          });
 
-              for( int i =0 ; i < results.length ; i++) {
-                objects.add(results[i]['detectedClass']);
-              }
-              print('[DEBUG] Objects: $objects');
-              Results_text = objects.toString();
-              ReadOut('Detected:' + Results_text);
+          dynamic results = await yoloTiny(img_data);
+          objects = new List();
+
+          for( int i =0 ; i < results.length ; i++) {
+            objects.add(results[i]['detectedClass']);
+          }
+          print('[DEBUG] Objects: $objects');
+          Results_text = objects.toString();
+          ReadOut('Detected:' + Results_text);
         }
+
+        if(intent == 'location'){
+          dynamic location = await getLocation();
+          print( location);
+          ReadOut('Right now , you are at :' + location);
+
+        }
+
+
         setState(() {});
         speech.stop();
       },

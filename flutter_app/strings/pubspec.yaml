@@ -30,6 +30,9 @@ dependencies:
   speech_recognition: ^0.3.0+1
   speech_to_text: ^2.3.0
   synchronized: ^2.2.0+2
+  geolocator: ^6.0.0+1
+  geocoder: ^0.2.1
+  wit_ai: ^0.0.2
 
 
 
