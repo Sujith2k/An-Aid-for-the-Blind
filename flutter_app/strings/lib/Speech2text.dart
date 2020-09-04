@@ -19,23 +19,25 @@ initialize_stt() async{
 
 
 StartListening() async{
+  try{
+    isListening = true;
+    speech.listen(
+        onResult: resultListener,
+        listenFor: Duration(seconds: 10),
+        localeId: "en_IN",
+        onSoundLevelChange: soundLevelListener,
+        cancelOnError: false,
+        partialResults: false,
+        onDevice: true,
+        listenMode: stt.ListenMode.confirmation
+    );
 
-  isListening = true;
-  speech.listen(
-    onResult: resultListener,
-    listenFor: Duration(seconds: 10),
-    localeId: "en_IN",
-    onSoundLevelChange: soundLevelListener,
-    cancelOnError: true,
-    partialResults: false,
-    onDevice: true,
-    listenMode: stt.ListenMode.confirmation
-  );
+    while(isListening){
+      await Future.delayed(Duration(milliseconds: 100));
+    }
+    return final_words;
+  }catch(_) {}
 
-  while(isListening){
-    await Future.delayed(Duration(milliseconds: 100));
-  }
-  return final_words;
 }
 
 resultListener(SpeechRecognitionResult result){

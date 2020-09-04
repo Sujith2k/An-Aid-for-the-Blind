@@ -18,25 +18,21 @@ loadmodel() async{
 
 yoloTiny(dynamic image_data) async{
 
-
   print('[DEBUG] BEFORE YOLO');
   img.Image image;
-  return image_data.then( (data) async{
-    image = img.decodeImage(data);
-    img.Image resizedImage = img.copyResize(image, height: 416, width: 416);
-    print('[DEBUG] After copyResize');
+  image = img.decodeImage(image_data);
+  img.Image resizedImage = img.copyResize(image, height: 416, width: 416);
+  print('[DEBUG] After copyResize');
 
-    var recognition = await Tflite.detectObjectOnBinary(
-      binary: imageToByteListFloat32(resizedImage, 416 , 0 , 255),
-      model: "YOLO",
-      threshold: 0.3,
-    );
-    print('[DEBUG] AFTER YOLO');
-    print('[DEBUG] Detections: $recognition');
+  var recognition = await Tflite.detectObjectOnBinary(
+    binary: imageToByteListFloat32(resizedImage, 416 , 0 , 255),
+    model: "YOLO",
+    threshold: 0.3,
+  );
+  print('[DEBUG] AFTER YOLO');
+  print('[DEBUG] Detections: $recognition');
 
-    return recognition;
-  });
-
+  return recognition;
 }
 
 Uint8List imageToByteListFloat32(
