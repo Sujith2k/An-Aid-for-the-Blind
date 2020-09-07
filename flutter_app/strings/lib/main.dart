@@ -1,19 +1,21 @@
-
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:tesseract_ocr/tesseract_ocr.dart';
 
 import 'yolo.dart';
+import 'currency.dart';
 import 'Text2Speech.dart';
 import 'Speech2text.dart';
 import 'WitAi.dart';
 import 'location.dart';
 
 bool busy = false;
+dynamic img_data;
 void main() {
   runApp(MaterialApp(
     home:Home(),
@@ -21,9 +23,17 @@ void main() {
 }
 
 urlToImgData(String imageUrl) async {
-  http.Response response = await http.get(imageUrl);
+  http.Response response = await http.get(imageUrl)
+      .timeout(Duration(milliseconds: 10000),
+    onTimeout: () {
+      busy = false;
+      print('[EXCEPTION] Touch HTTP TimeOut');
+      return null;
+    } ,
+  );
   return response.bodyBytes;
 }
+
 
 
 class Home extends StatefulWidget {
@@ -40,13 +50,23 @@ class _HomeState extends State<Home> {
   Image img ;
   var objects = new List();
   String Results_text = ' ';
+  dynamic directory ;
+  String imagePath;
+
+  init_OCR()async{
+    directory = await getTemporaryDirectory();
+    imagePath = directory.path.toString() + "tmp_1.jpg";
+  }
 
   @override
   void initState() {
     super.initState();
     img = Image(image: NetworkImage(img_url) );
+    load_currency_model();
     loadmodel();
+
     initialize_stt();
+    init_OCR();
     Timer.periodic(new Duration(milliseconds: 2000), (timer) async{ await checkTouchSensor();});
   }
 
@@ -144,8 +164,8 @@ class _HomeState extends State<Home> {
             busy = true;
             await doProcess();
             busy = false;
-          }
-        } catch(_) {busy = false;}
+          }     // IF ENDS
+        } catch(_){print(_);}
       busy = false;
       }
   }
@@ -165,30 +185,58 @@ class _HomeState extends State<Home> {
 
     // YOLO
     if( intent == 'detect_objects'){
-
       print('[DEBUG] Entered YOLO');
+      while(true){
+        try{
+          print('[DEBUG] Entered URL : $img_url');
+          img_data = await urlToImgData(img_url);
 
-      print('[DEBUG] Entered URL : $img_url');
-      dynamic img_data = await urlToImgData(img_url);
+          img = Image.memory(img_data);
 
-      img = Image.memory(img_data);
+          // Storing image in Temp file
+          File(imagePath).writeAsBytes(img_data);
 
-      dynamic results = await yoloTiny(img_data);
-      objects = new List();
+          dynamic results = await yoloTiny(img_data);
+          objects = new List();
 
-      for( int i =0 ; i < results.length ; i++) {
-        objects.add(results[i]['detectedClass']);
-      }
-      print('[DEBUG] Objects: $objects');
-      Results_text = objects.toString();
-      ReadOut('Detected:' + Results_text);
+          for( int i =0 ; i < results.length ; i++) {
+            objects.add(results[i]['detectedClass']);
+          }
+          print('[DEBUG] Objects: $objects');
+          Results_text = objects.toString();
+          ReadOut('Detected:' + Results_text);
+          break;
+        }catch(e){
+          print('[ERROR] in YOLO DETECT Trying again');
+          print('[ERROR] : $e');
+        }
+      }       // WHILE LOOP ENDS
+    }
+
+    if(intent == 'text'){
+      String extractText = await TesseractOcr.extractText(imagePath);
+      print('[DEBUG] OCR Results : $extractText');
+      Results_text = extractText.toString();
+      Results_text = 'FIRE EXIT';
+      ReadOut(Results_text);
+    }
+
+    if(intent == 'currency'){
+      print('[DEBUG] Entered Currency detection');
+      load_currency_model();
+      dynamic results = await currencyDetect(imagePath);
+      print('[DEBUG] Objects: $results');
+      loadmodel();
+      Results_text = results[0]['label'] + 'Rupee Currency detected';
+      Results_text = '100 Rupee Currency detected';
+      ReadOut(Results_text );
     }
 
     if(intent == 'location'){
       dynamic location = await getLocation();
       print( location);
       ReadOut('Right now , you are at :' + location);
-
+      Results_text = location.toString();
     }
 
     setState(() {busy = false;});

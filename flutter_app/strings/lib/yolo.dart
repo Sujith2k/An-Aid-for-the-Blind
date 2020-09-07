@@ -27,6 +27,7 @@ yoloTiny(dynamic image_data) async{
   var recognition = await Tflite.detectObjectOnBinary(
     binary: imageToByteListFloat32(resizedImage, 416 , 0 , 255),
     model: "YOLO",
+    numResultsPerClass: 1,
     threshold: 0.3,
   );
   print('[DEBUG] AFTER YOLO');

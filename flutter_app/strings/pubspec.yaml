@@ -29,10 +29,11 @@ dependencies:
   flutter_tts: ^0.6.0
   speech_recognition: ^0.3.0+1
   speech_to_text: ^2.3.0
-  synchronized: ^2.2.0+2
   geolocator: ^6.0.0+1
   geocoder: ^0.2.1
   wit_ai: ^0.0.2
+  tesseract_ocr: ^0.3.0
+  path_provider: ^1.6.14
 
 
 
@@ -57,11 +58,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-   - assets/tflite/yolo_v3_tiny.txt
-   - assets/tflite/yolov3-tiny.tflite
-   - assets/tflite/yolov2_tiny.txt
-   - assets/tflite/yolov2_tiny.tflite
-   - assets/tflite/yolo_v3.tflite
+   - assets/tflite/
+   - assets/
+   - assets/tessdata/
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
