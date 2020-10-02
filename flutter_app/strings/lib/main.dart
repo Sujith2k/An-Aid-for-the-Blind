@@ -213,21 +213,24 @@ class _HomeState extends State<Home> {
       }       // WHILE LOOP ENDS
     }
 
-    if(intent == 'text'){
+    // To detect and readout text
+    else if(intent == 'text'){      
       String extractText = await TesseractOcr.extractText(imagePath);
       print('[DEBUG] OCR Results : $extractText');
       Results_text = extractText.toString();
       ReadOut(Results_text);
     }
 
-    if(intent == 'location'){
+    // To read out current location
+    else if(intent == 'location'){
       dynamic location = await getLocation();
       print( location);
       ReadOut('Right now , you are at :' + location);
       Results_text = location.toString();
     }
     
-    if(intent == 'currency'){
+    // To detect currency
+    else if(intent == 'currency'){
       print('[DEBUG] Entered Currency detection');
       load_currency_model();
       dynamic results = await currencyDetect(imagePath);
