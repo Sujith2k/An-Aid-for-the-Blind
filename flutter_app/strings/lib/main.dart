@@ -220,6 +220,13 @@ class _HomeState extends State<Home> {
       ReadOut(Results_text);
     }
 
+    if(intent == 'location'){
+      dynamic location = await getLocation();
+      print( location);
+      ReadOut('Right now , you are at :' + location);
+      Results_text = location.toString();
+    }
+    
     if(intent == 'currency'){
       print('[DEBUG] Entered Currency detection');
       load_currency_model();
@@ -228,13 +235,6 @@ class _HomeState extends State<Home> {
       loadmodel();
       Results_text = results[0]['label'] + 'Rupee Currency detected';
       ReadOut(Results_text );
-    }
-
-    if(intent == 'location'){
-      dynamic location = await getLocation();
-      print( location);
-      ReadOut('Right now , you are at :' + location);
-      Results_text = location.toString();
     }
 
     setState(() {busy = false;});
